@@ -12,7 +12,21 @@ root.title("Product-Comparison-System-Using-Neo4j")
 searchRow = 0
 
 # Search bar
-searchBar = Entry(root, width=50)
+# Use this as a flag to indicate if the box was clicked.
+global clicked
+clicked = False
+
+# Delete the contents of the Entry widget. Use the flag
+# so that this only happens the first time.
+def callback(event):
+    global clicked
+    if (clicked == False):
+        searchBar.delete(0, END)
+        searchBar.config(fg = "black")   # Change the colour of the text here.
+        clicked = True
+
+searchBar = Entry(root, width=50, fg = "gray")
+searchBar.bind("<Button-1>", callback)   # Bind a mouse-click to the callback function.
 searchBar.insert(0, 'Search for a product...')
 searchBar.grid(row=searchRow, column=0, sticky=W, pady=4)
 
@@ -48,7 +62,7 @@ toEntry.grid(row=searchRow, column=11, sticky=W, pady=4)
 # This method is called when button is clicked
 def go():
     print(searchBar.get())
-    print("Rating drop down value is", ratingDropDownValue.get())
+    print(ratingDropDownValue.get())
     print(fromEntry.get())
     print(toEntry.get())
 
