@@ -28,10 +28,10 @@ def callback(event):
         searchBar.delete(0, END)
         searchBar.config(fg = "black")   # Change the colour of the text here.
         clicked = True
-searchBar = Entry(searchFrame, width=50, fg = "gray")
+searchBar = Entry(searchFrame, fg = "gray")
 searchBar.bind("<Button-1>", callback)   # Bind a mouse-click to the callback function.
 searchBar.insert(0, 'Search for a product...')
-searchBar.pack(side=LEFT, fill=Y)
+searchBar.pack(side=LEFT, fill=X)
 
 # Rating dropdown
 DropDownDict = {"Above 1" : 1, "Above 2" : 2, "Above 3" : 3, "Above 4" : 4}
@@ -77,10 +77,12 @@ def go():
 # Submit button for searching
 Button(searchFrame, text="Go!", command=go).pack(side=LEFT)
 
+################################################################################
 # Data will be shown in this frame
 dataFrame = Frame(root)
 dataFrame.pack(side=BOTTOM)
 
+################################################################################
 # Footer starts here
 footer = Frame(root)
 footer.pack(side = BOTTOM)
