@@ -6,15 +6,34 @@ except ImportError:
     from tkinter import *
     from tkinter import ttk
 
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
+driver = GraphDatabase.driver("bolt://localhost:7687",
+                                auth=basic_auth("neo4j", "neo4j"))
 session = driver.session()
 
+################################################################################
+# All the methods are here
+def go():
+    result = session.run("""MATCH (a:Book)-[:PUBLISHED_BY]->(b:Publishing_House)
+    return a.title as a,b.name as b""")
+    for record in result:
+        print("%s %s" % (record["a"], record["b"]))
+    print(searchBar.get())
+    print(ratingDropDownValue.get())
+    print(fromEntry.get())
+    print(toEntry.get())
+
+def create_window():
+    addProductWindow = Tk()
+    addProductWindow.title("Product-Comparison-System-Using-Neo4j")
+
+################################################################################
 # Window is created here
 root = Tk()
 root.title("Product-Comparison-System-Using-Neo4j")
 
+padding = 15
 searchFrame = Frame(root)
-searchFrame.pack()
+searchFrame.pack(side=TOP, pady=(padding,padding), padx=(padding, padding))
 
 # Search bar
 # Use this as a flag to indicate if the box was clicked.
@@ -62,20 +81,8 @@ PriceRangeLabelTo.pack(side=LEFT)
 toEntry = Entry(searchFrame, width=5)
 toEntry.pack(side=LEFT)
 
-# This method is called when button is clicked
-def go():
-    result = session.run("MATCH (a:Book)-[:PUBLISHED_BY]->(b:Publishing_House) return a.title as a,b.name as b")
-    for record in result:
-        print("%s %s" % (record["a"], record["b"]))
-        PriceRangeVariableTo.set(record["a"])
-        time.sleep(1)
-    print(searchBar.get())
-    print(ratingDropDownValue.get())
-    print(fromEntry.get())
-    print(toEntry.get())
-
 # Submit button for searching
-Button(searchFrame, text="Go!", command=go).pack(side=LEFT)
+Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
 
 ################################################################################
 # Data will be shown in this frame
@@ -85,7 +92,7 @@ dataFrame.pack(side=BOTTOM)
 ################################################################################
 # Footer starts here
 footer = Frame(root)
-footer.pack(side = BOTTOM)
+footer.pack(side = BOTTOM, pady=(0,10))
 searchRow = 0
 
 # Label for "For admin: "
@@ -95,7 +102,7 @@ ForAdminVariable.set("For admin: ")
 ForAdminLabel.pack(side=LEFT)
 
 # Add Product button
-Button(footer, text="Add Product").pack(side=LEFT)
+Button(footer, text="Add Product", command=create_window).pack(side=LEFT)
 
 # DELETE PRODUCT button
 Button(footer, text="Delete Product").pack(side=LEFT)

@@ -2,6 +2,8 @@
 
 Product Comparison System Using Neo4j and Tkinter
 
+This is a course project for DBMS Lab.
+
 ## Requirements
 
 1. python3
