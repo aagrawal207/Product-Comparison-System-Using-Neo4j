@@ -28,6 +28,10 @@ def addProduct():
     print("Price = " + PriceEntry.get())
     print("Stock = " + StockEntry.get())
     print("Rating = " + RatingEntry.get())
+    ProductType['laptop'] = 3
+    ProductTypeDropDown = OptionMenu(addFrame,
+                        ProductTypeDropDownValue,
+                        *ProductType.keys())
 
 ################################################################################
 # Window is created here
@@ -92,52 +96,82 @@ Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
 ################################################################################
 
 # Data will be shown in this frame
+lineFrame = Frame(root, bg='black')
+lineFrame.pack(fill=BOTH)
+
+################################################################################
+
+# Data will be shown in this frame
 dataFrame = Frame(root, bg='red')
 dataFrame.pack(fill=BOTH,expand=True)
+
+################################################################################
+
+# Data will be shown in this frame
+lineFrame = Frame(root, bg='black')
+lineFrame.pack(fill=BOTH)
 
 ################################################################################
 addFrame = Frame(root)
 addFrame.pack(pady=(padding,padding), padx=(padding, 0))
 
+row_num = 0
+
+# Label for "Add Product Stock: "
+AddProductVar = StringVar()
+AddProductLabel = Label(addFrame, textvariable=AddProductVar)
+AddProductVar.set("Add Product Stock: ")
+AddProductLabel.grid(row = row_num, column=2)
+
 # Label for "Enter Product Name: "
 ProductNameVar = StringVar()
 ProductNameLabel = Label(addFrame, textvariable=ProductNameVar)
 ProductNameVar.set("Enter Product Name: ")
-ProductNameLabel.grid(row = 0, column=0)
+ProductNameLabel.grid(row = row_num+1, column=0)
 
 # Product Name entry
 NameEntry = Entry(addFrame)
-NameEntry.grid(row=0, column=3)
+NameEntry.grid(row=row_num+1, column=3)
 
 # Label for "Enter Product Price: "
 ProductPriceVar = StringVar()
 ProductPriceLabel = Label(addFrame, textvariable=ProductPriceVar)
 ProductPriceVar.set("Enter Price of the Product: ")
-ProductPriceLabel.grid(row = 1, column=0)
+ProductPriceLabel.grid(row = row_num+2, column=0)
 
 # Product Name entry
 PriceEntry = Entry(addFrame)
-PriceEntry.grid(row=1, column=3)
+PriceEntry.grid(row=row_num+2, column=3)
 
 # Label for "Enter Product Rating: "
 ProductRatingVar = StringVar()
 ProductRatingLabel = Label(addFrame, textvariable=ProductRatingVar)
 ProductRatingVar.set("Enter Rating of the Product: ")
-ProductRatingLabel.grid(row = 2, column=0)
+ProductRatingLabel.grid(row = row_num+3, column=0)
 
 # Product Name entry
 RatingEntry = Entry(addFrame)
-RatingEntry.grid(row=2, column=3)
+RatingEntry.grid(row=row_num+3, column=3)
 
 # Label for "Enter Product Stock: "
 ProductStockVar = StringVar()
 ProductStockLabel = Label(addFrame, textvariable=ProductStockVar)
 ProductStockVar.set("Enter Stock of the Product: ")
-ProductStockLabel.grid(row = 3, column=0)
+ProductStockLabel.grid(row = row_num+4, column=0)
 
 # Product Name entry
 StockEntry = Entry(addFrame)
-StockEntry.grid(row=3, column=3)
+StockEntry.grid(row=row_num+4, column=3)
+
+# Label for "Enter Product Stock: "
+ProductTypeVar = StringVar()
+ProductTypeLabel = Label(addFrame, textvariable=ProductTypeVar)
+ProductTypeVar.set("Enter the type of Product: ")
+ProductTypeLabel.grid(row = row_num+5, column=0)
+
+# Product Name entry
+TypeEntry = Entry(addFrame)
+TypeEntry.grid(row=row_num+5, column=3)
 
 # Website dropdown
 DropDownDict2 = {"Amazon" : 1, "Flipkart" : 2, "Snapdeal" : 3, "Shopclues" : 4}
@@ -146,9 +180,58 @@ websiteDropDownValue.set("Amazon") # default value
 websiteDropDown = OptionMenu(addFrame,
                     websiteDropDownValue,
                     *DropDownDict2.keys())
-websiteDropDown.grid(row=4, column=0)
+websiteDropDown.grid(row=row_num+6, column=0)
 
 # Add Product button
-Button(addFrame, text="Add Product", command=addProduct).grid(row=4,column=3)
+Button(addFrame, text="Add Product", command=addProduct).grid(row=row_num+6,column=3)
+
+################################################################################
+
+# Data will be shown in this frame
+lineFrame = Frame(root, bg='black')
+lineFrame.pack(fill=BOTH)
+
+################################################################################
+deleteFrame = Frame(root)
+deleteFrame.pack(pady=(padding,padding), padx=(padding, 0))
+
+row_num = 0
+
+# Label for "Delete Product Stock: "
+DeleteProductVar = StringVar()
+DeleteProductLabel = Label(deleteFrame, textvariable=DeleteProductVar)
+DeleteProductVar.set("Delete Product Stock: ")
+DeleteProductLabel.grid(row = row_num, column=2)
+
+# Label for "Enter Product Name: "
+ProductNameVar = StringVar()
+ProductNameLabel = Label(deleteFrame, textvariable=ProductNameVar)
+ProductNameVar.set("Enter Product Name: ")
+ProductNameLabel.grid(row = row_num+1, column=0)
+
+# Product Name entry
+NameEntry = Entry(deleteFrame)
+NameEntry.grid(row=row_num+1, column=3)
+
+# Label for "Enter Product Stock: "
+ProductStockVar = StringVar()
+ProductStockLabel = Label(deleteFrame, textvariable=ProductStockVar)
+ProductStockVar.set("Enter Stock to be deleted: ")
+ProductStockLabel.grid(row = row_num+2, column=0)
+
+# Product Name entry
+StockEntry = Entry(deleteFrame)
+StockEntry.grid(row=row_num+2, column=3)
+
+# Website dropdown
+websiteDropDownValue = StringVar(deleteFrame)
+websiteDropDownValue.set("Amazon") # default value
+websiteDropDown = OptionMenu(deleteFrame,
+                    websiteDropDownValue,
+                    *DropDownDict2.keys())
+websiteDropDown.grid(row=row_num+3, column=0)
+
+# Add Product button
+Button(deleteFrame, text="Delete Product", command=addProduct).grid(row=row_num+3,column=3)
 
 root.mainloop()
