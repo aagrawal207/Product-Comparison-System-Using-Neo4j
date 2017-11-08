@@ -1,13 +1,8 @@
 from neo4j.v1 import GraphDatabase, basic_auth
-try:
-    from Tkinter import *
-    from Tkinter import ttk
-except ImportError:
-    from tkinter import *
-    from tkinter import ttk
+from tkinter import *
+from tkinter import ttk
 
-driver = GraphDatabase.driver("bolt://localhost:7687",
-                                auth=basic_auth("neo4j", "neo4j"))
+driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
 session = driver.session()
 
 ################################################################################
@@ -31,9 +26,9 @@ def addProduct():
     print("Rating = " + RatingEntry.get())
 
 def deleteProduct():
-    print(NameEntry.get())
-    print(websiteDropDownValue.get())
-    print("Stock = " + StockEntry.get())
+    print(NameEntry2.get())
+    print(websiteDropDownValue2.get())
+    print("Stock = " + StockEntry2.get())
 
 ################################################################################
 # Window is created here
@@ -212,32 +207,32 @@ DeleteProductVar.set("Delete Product Stock: ")
 DeleteProductLabel.grid(row = row_num, column=2)
 
 # Label for "Enter Product Name: "
-ProductNameVar = StringVar()
-ProductNameLabel = Label(deleteFrame, textvariable=ProductNameVar)
-ProductNameVar.set("Enter Product Name: ")
-ProductNameLabel.grid(row = row_num+1, column=0)
+ProductNameVar2 = StringVar()
+ProductNameLabel2 = Label(deleteFrame, textvariable=ProductNameVar2)
+ProductNameVar2.set("Enter Product Name: ")
+ProductNameLabel2.grid(row = row_num+1, column=0)
 
 # Product Name entry
-NameEntry = Entry(deleteFrame)
-NameEntry.grid(row=row_num+1, column=3)
+NameEntry2 = Entry(deleteFrame)
+NameEntry2.grid(row=row_num+1, column=3)
 
 # Label for "Enter Product Stock: "
-ProductStockVar = StringVar()
-ProductStockLabel = Label(deleteFrame, textvariable=ProductStockVar)
-ProductStockVar.set("Enter Stock to be deleted: ")
-ProductStockLabel.grid(row = row_num+2, column=0)
+ProductStockVar2 = StringVar()
+ProductStockLabel2 = Label(deleteFrame, textvariable=ProductStockVar2)
+ProductStockVar2.set("Enter Stock to be deleted: ")
+ProductStockLabel2.grid(row = row_num+2, column=0)
 
 # Product Name entry
-StockEntry = Entry(deleteFrame)
-StockEntry.grid(row=row_num+2, column=3)
+StockEntry2 = Entry(deleteFrame)
+StockEntry2.grid(row=row_num+2, column=3)
 
 # Website dropdown
-websiteDropDownValue = StringVar(deleteFrame)
-websiteDropDownValue.set("Amazon") # default value
-websiteDropDown = OptionMenu(deleteFrame,
-                    websiteDropDownValue,
+websiteDropDownValue2 = StringVar(deleteFrame)
+websiteDropDownValue2.set("Amazon") # default value
+websiteDropDown2 = OptionMenu(deleteFrame,
+                    websiteDropDownValue2,
                     *DropDownDict2.keys())
-websiteDropDown.grid(row=row_num+3, column=0)
+websiteDropDown2.grid(row=row_num+3, column=0)
 
 # Add Product button
 Button(deleteFrame, text="Delete Product", command=deleteProduct).grid(row=row_num+3,column=3)
