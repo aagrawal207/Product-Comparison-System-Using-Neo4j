@@ -22,16 +22,18 @@ def go():
     print(fromEntry.get())
     print(toEntry.get())
 
+
 def addProduct():
     print(NameEntry.get())
     print(websiteDropDownValue.get())
     print("Price = " + PriceEntry.get())
     print("Stock = " + StockEntry.get())
     print("Rating = " + RatingEntry.get())
-    ProductType['laptop'] = 3
-    ProductTypeDropDown = OptionMenu(addFrame,
-                        ProductTypeDropDownValue,
-                        *ProductType.keys())
+
+def deleteProduct():
+    print(NameEntry.get())
+    print(websiteDropDownValue.get())
+    print("Stock = " + StockEntry.get())
 
 ################################################################################
 # Window is created here
@@ -59,6 +61,12 @@ searchBar.bind("<Button-1>", callback)   # Bind a mouse-click to the callback fu
 searchBar.insert(0, 'Search for a product...')
 searchBar.pack(side=LEFT, fill=X)
 
+# Label for "Price range from: "
+RatingVar = StringVar()
+RatingLabel = Label(searchFrame, textvariable=RatingVar)
+RatingVar.set("  Rating: ")
+RatingLabel.pack(side=LEFT)
+
 # Rating dropdown
 DropDownDict = {"Above 1" : 1, "Above 2" : 2, "Above 3" : 3, "Above 4" : 4}
 ratingDropDownValue = StringVar(searchFrame)
@@ -71,7 +79,7 @@ ratingDropDown.pack(side=LEFT)
 # Label for "Price range from: "
 PriceRangeVariableFrom = StringVar()
 PriceRangeLabelFrom = Label(searchFrame, textvariable=PriceRangeVariableFrom)
-PriceRangeVariableFrom.set("Price range from: ")
+PriceRangeVariableFrom.set("  Price range from: ")
 PriceRangeLabelFrom.pack(side=LEFT)
 
 # From entry
@@ -232,6 +240,6 @@ websiteDropDown = OptionMenu(deleteFrame,
 websiteDropDown.grid(row=row_num+3, column=0)
 
 # Add Product button
-Button(deleteFrame, text="Delete Product", command=addProduct).grid(row=row_num+3,column=3)
+Button(deleteFrame, text="Delete Product", command=deleteProduct).grid(row=row_num+3,column=3)
 
 root.mainloop()
