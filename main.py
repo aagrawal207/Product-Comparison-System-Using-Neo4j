@@ -13,27 +13,30 @@ session = driver.session()
 ################################################################################
 # All the methods are here
 def go():
-    result = session.run("""MATCH (a:Book)-[:PUBLISHED_BY]->(b:Publishing_House)
-    return a.title as a,b.name as b""")
-    for record in result:
-        print("%s %s" % (record["a"], record["b"]))
+    # result = session.run("""MATCH (a:Book)-[:PUBLISHED_BY]->(b:Publishing_House)
+    # return a.title as a,b.name as b""")
+    # for record in result:
+    #     print("%s %s" % (record["a"], record["b"]))
     print(searchBar.get())
     print(ratingDropDownValue.get())
     print(fromEntry.get())
     print(toEntry.get())
 
-def create_window():
-    addProductWindow = Tk()
-    addProductWindow.title("Product-Comparison-System-Using-Neo4j")
+def addProduct():
+    print(NameEntry.get())
+    print(websiteDropDownValue.get())
+    print("Price = " + PriceEntry.get())
+    print("Stock = " + StockEntry.get())
+    print("Rating = " + RatingEntry.get())
 
 ################################################################################
 # Window is created here
 root = Tk()
 root.title("Product-Comparison-System-Using-Neo4j")
 
-padding = 15
-searchFrame = Frame(root)
-searchFrame.pack(side=TOP, pady=(padding,padding), padx=(padding, padding))
+padding = 20
+searchFrame = Frame(root, height=100)
+searchFrame.pack(pady=(padding,padding), padx=(padding, padding))
 
 # Search bar
 # Use this as a flag to indicate if the box was clicked.
@@ -68,7 +71,8 @@ PriceRangeVariableFrom.set("Price range from: ")
 PriceRangeLabelFrom.pack(side=LEFT)
 
 # From entry
-fromEntry = Entry(searchFrame, width=5)
+fromEntry = Entry(searchFrame, width=7)
+fromEntry.insert(0, '0')
 fromEntry.pack(side=LEFT)
 
 # Label for "to: "
@@ -78,33 +82,73 @@ PriceRangeVariableTo.set(" to: ")
 PriceRangeLabelTo.pack(side=LEFT)
 
 # To entry
-toEntry = Entry(searchFrame, width=5)
+toEntry = Entry(searchFrame, width=7)
+toEntry.insert(0, 100000)
 toEntry.pack(side=LEFT)
 
 # Submit button for searching
 Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
 
 ################################################################################
+
 # Data will be shown in this frame
-dataFrame = Frame(root)
-dataFrame.pack(side=BOTTOM)
+dataFrame = Frame(root, bg='red')
+dataFrame.pack(fill=BOTH,expand=True)
 
 ################################################################################
-# Footer starts here
-footer = Frame(root)
-footer.pack(side = BOTTOM, pady=(0,10))
-searchRow = 0
+addFrame = Frame(root)
+addFrame.pack(pady=(padding,padding), padx=(padding, 0))
 
-# Label for "For admin: "
-ForAdminVariable = StringVar()
-ForAdminLabel = Label(footer, textvariable=ForAdminVariable)
-ForAdminVariable.set("For admin: ")
-ForAdminLabel.pack(side=LEFT)
+# Label for "Enter Product Name: "
+ProductNameVar = StringVar()
+ProductNameLabel = Label(addFrame, textvariable=ProductNameVar)
+ProductNameVar.set("Enter Product Name: ")
+ProductNameLabel.grid(row = 0, column=0)
+
+# Product Name entry
+NameEntry = Entry(addFrame)
+NameEntry.grid(row=0, column=3)
+
+# Label for "Enter Product Price: "
+ProductPriceVar = StringVar()
+ProductPriceLabel = Label(addFrame, textvariable=ProductPriceVar)
+ProductPriceVar.set("Enter Price of the Product: ")
+ProductPriceLabel.grid(row = 1, column=0)
+
+# Product Name entry
+PriceEntry = Entry(addFrame)
+PriceEntry.grid(row=1, column=3)
+
+# Label for "Enter Product Rating: "
+ProductRatingVar = StringVar()
+ProductRatingLabel = Label(addFrame, textvariable=ProductRatingVar)
+ProductRatingVar.set("Enter Rating of the Product: ")
+ProductRatingLabel.grid(row = 2, column=0)
+
+# Product Name entry
+RatingEntry = Entry(addFrame)
+RatingEntry.grid(row=2, column=3)
+
+# Label for "Enter Product Stock: "
+ProductStockVar = StringVar()
+ProductStockLabel = Label(addFrame, textvariable=ProductStockVar)
+ProductStockVar.set("Enter Stock of the Product: ")
+ProductStockLabel.grid(row = 3, column=0)
+
+# Product Name entry
+StockEntry = Entry(addFrame)
+StockEntry.grid(row=3, column=3)
+
+# Website dropdown
+DropDownDict2 = {"Amazon" : 1, "Flipkart" : 2, "Snapdeal" : 3, "Shopclues" : 4}
+websiteDropDownValue = StringVar(addFrame)
+websiteDropDownValue.set("Amazon") # default value
+websiteDropDown = OptionMenu(addFrame,
+                    websiteDropDownValue,
+                    *DropDownDict2.keys())
+websiteDropDown.grid(row=4, column=0)
 
 # Add Product button
-Button(footer, text="Add Product", command=create_window).pack(side=LEFT)
-
-# DELETE PRODUCT button
-Button(footer, text="Delete Product").pack(side=LEFT)
+Button(addFrame, text="Add Product", command=addProduct).grid(row=4,column=3)
 
 root.mainloop()
