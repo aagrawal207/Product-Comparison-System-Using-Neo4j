@@ -10,25 +10,31 @@ session = driver.session()
 ################################################################################
 # All the methods are here
 def go():
-    # result = session.run("""MATCH (a:Book)-[:PUBLISHED_BY]->(b:Publishing_House)
-    # return a.title as a,b.name as b""")
-    # for record in result:
-    #     print("%s %s" % (record["a"], record["b"]))
-    # searchBar.get())
-    # print(ratingDropDownValue.get())
-    # print(fromEntry.get())
-    # print(toEntry.get())
+
     prod = searchBar.get().lower()
     rating = ratingDropDownValue.get().lower()
     rating = int(float(rating[-1]))
     min_price = int(float(fromEntry.get()))
     max_price = int(float(toEntry.get()))
-    result = session.run("match(a:product{name:$name})-[r:sold_by]->(b:website) "
+    # result = session.run("match(a:product{name:$name})-[r:sold_by]->(b:website) "
+    #                      " where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price"
+    #                      " return r.price as price,r.rating as rating,b.name as website",
+    #                      name = prod,min_price=min_price,max_price=max_price,rating=rating)
+    result = session.run("match(a:product)-[r:sold_by]->(b:website) "
                          " where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price"
-                         " return r.price as price,r.rating as rating,b.name as website",
+                         " return a.name as name,r.price as price,r.rating as rating,b.name as website",
                          name = prod,min_price=min_price,max_price=max_price,rating=rating)
     for record in result:
-          print("%s %s %s" % (record["price"], record["rating"], record["website"]))
+        if prod in record["name"]:
+          print("%s %s %s %s" % (record["name"],record["price"], record["rating"], record["website"]))
+
+    result = session.run("""match(a:product_type{type:$name})<-[:of_type]-(b:product)-[r:sold_by]
+                         -> (c:website) where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
+                           return b.name as name,r.price as price,r.rating as rating,c.name as website""",
+                         name=prod, min_price=min_price, max_price=max_price, rating=rating)
+    for record in result:
+          print("%s %s %s %s" % (record["name"],record["price"], record["rating"], record["website"]))
+
 
 def addProduct():
     name = (NameEntry.get()).lower()
