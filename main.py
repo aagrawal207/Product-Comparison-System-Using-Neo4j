@@ -14,11 +14,21 @@ def go():
     # return a.title as a,b.name as b""")
     # for record in result:
     #     print("%s %s" % (record["a"], record["b"]))
-    print(searchBar.get())
-    print(ratingDropDownValue.get())
-    print(fromEntry.get())
-    print(toEntry.get())
-
+    # searchBar.get())
+    # print(ratingDropDownValue.get())
+    # print(fromEntry.get())
+    # print(toEntry.get())
+    prod = searchBar.get().lower()
+    rating = ratingDropDownValue.get().lower()
+    rating = int(float(rating[-1]))
+    min_price = int(float(fromEntry.get()))
+    max_price = int(float(toEntry.get()))
+    result = session.run("match(a:product{name:$name})-[r:sold_by]->(b:website) "
+                         " where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price"
+                         " return r.price as price,r.rating as rating,b.name as website",
+                         name = prod,min_price=min_price,max_price=max_price,rating=rating)
+    for record in result:
+          print("%s %s %s" % (record["price"], record["rating"], record["website"]))
 
 def addProduct():
     name = (NameEntry.get()).lower()
@@ -28,9 +38,9 @@ def addProduct():
     rating = float(RatingEntry.get())
     type1 = (TypeEntry.get()).lower()
     print (name,website,price,stock,rating,type1)
-    session.run("merge (site:website{name:$website}) merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site) "
-                "on create set r.price=$price ,r.stock=$stock,r.rating=$rating"
-                " on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating",name=name,rating=rating,price = price,stock = stock,website=website)
+    session.run("""merge (site:website{name:$website}) merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site)
+                on create set r.price=$price ,r.stock=$stock,r.rating=$rating
+                on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating""",name=name,rating=rating,price = price,stock = stock,website=website)
     session.run("match (x:product{name:$name}) merge(b:product_type{type:$type}) merge(x)-[:of_type]->(b)",name=name,type=type1)
 
 def deleteProduct():
