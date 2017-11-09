@@ -5,6 +5,8 @@ from tkinter import ttk
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "ayush@12"))
 session = driver.session()
 
+
+
 ################################################################################
 # All the methods are here
 def go():
@@ -19,11 +21,6 @@ def go():
 
 
 def addProduct():
-    #print(TypeEntry.get())
-    # print(websiteDropDownValue.get())
-    # print("Price = " + PriceEntry.get())
-    # print("Stock = " + StockEntry.get())
-    # print("Rating = " + RatingEntry.get())
     name = (NameEntry.get()).lower()
     website = (websiteDropDownValue.get()).lower()
     price = int(float(PriceEntry.get()))
@@ -31,8 +28,10 @@ def addProduct():
     rating = float(RatingEntry.get())
     type1 = (TypeEntry.get()).lower()
     print (name,website,price,stock,rating,type1)
-    session.run("match (site: website{name:$website})merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site) on create set r.price=$price ,r.stock=$stock,r.rating=$rating on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating",name=name,rating=rating,price = price,stock = stock,website=website)
-    session.run("match (x:product{name:$name}) merge(x)-[:of_type]->(b:product_type{type:$type})",name=name,type=type1)
+    session.run("merge (site:website{name:$website}) merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site) "
+                "on create set r.price=$price ,r.stock=$stock,r.rating=$rating"
+                " on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating",name=name,rating=rating,price = price,stock = stock,website=website)
+    session.run("match (x:product{name:$name}) merge(b:product_type{type:$type}) merge(x)-[:of_type]->(b)",name=name,type=type1)
 
 def deleteProduct():
     print(NameEntry2.get())
