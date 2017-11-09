@@ -31,7 +31,7 @@ def addProduct():
     rating = float(RatingEntry.get())
     type1 = (TypeEntry.get()).lower()
     print (name,website,price,stock,rating,type1)
-    session.run("merge(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) on create set r.price=$price ,r.stock=$stock,r.rating=$rating on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating",name=name,rating=rating,price = price,stock = stock,website=website)
+    session.run("match (site: website{name:$website})merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site) on create set r.price=$price ,r.stock=$stock,r.rating=$rating on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating",name=name,rating=rating,price = price,stock = stock,website=website)
     session.run("match (x:product{name:$name}) merge(x)-[:of_type]->(b:product_type{type:$type})",name=name,type=type1)
 
 def deleteProduct():
