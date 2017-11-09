@@ -2,7 +2,7 @@ from neo4j.v1 import GraphDatabase, basic_auth
 from tkinter import *
 from tkinter import ttk
 
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
+driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "ayush@12"))
 session = driver.session()
 
 ################################################################################
@@ -19,12 +19,20 @@ def go():
 
 
 def addProduct():
-    print(NameEntry.get())
-    print(websiteDropDownValue.get())
-    print("Price = " + PriceEntry.get())
-    print("Stock = " + StockEntry.get())
-    print("Rating = " + RatingEntry.get())
-
+    #print(TypeEntry.get())
+    # print(websiteDropDownValue.get())
+    # print("Price = " + PriceEntry.get())
+    # print("Stock = " + StockEntry.get())
+    # print("Rating = " + RatingEntry.get())
+    name = (NameEntry.get()).lower()
+    website = (websiteDropDownValue.get()).lower()
+    price = int(float(PriceEntry.get()))
+    stock = int(float(StockEntry.get()))
+    rating = float(RatingEntry.get())
+    type1 = (TypeEntry.get()).lower()
+    print (name,website,price,stock,rating,type1)
+    session.run("match(a:product{name:$name}) merge(a)-[r:sold_by]->(b:website{name:$website}) on create set r.price=$price ,r.stock=$stock,r.rating=$rating on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating",name=name,rating=rating,price = price,stock = stock,website=website)
+    session.run("match (x:product{name:$name}) merge(x)-[:of_type]->(b:product_type{type:$type})",name=name,type=type1)
 def deleteProduct():
     print(NameEntry2.get())
     print(websiteDropDownValue2.get())
