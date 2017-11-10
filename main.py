@@ -5,36 +5,10 @@ from tkinter import ttk
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "ayush@12"))
 session = driver.session()
 
-
-
 ################################################################################
-# All the methods are here
-def go():
 
-    prod = searchBar.get().lower()
-    rating = ratingDropDownValue.get().lower()
-    rating = int(float(rating[-1]))
-    min_price = int(float(fromEntry.get()))
-    max_price = int(float(toEntry.get()))
-    # result = session.run("match(a:product{name:$name})-[r:sold_by]->(b:website) "
-    #                      " where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price"
-    #                      " return r.price as price,r.rating as rating,b.name as website",
-    #                      name = prod,min_price=min_price,max_price=max_price,rating=rating)
-    result = session.run("match(a:product)-[r:sold_by]->(b:website) "
-                         " where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price"
-                         " return a.name as name,r.price as price,r.rating as rating,b.name as website",
-                         name = prod,min_price=min_price,max_price=max_price,rating=rating)
-    for record in result:
-        if prod in record["name"]:
-          print("%s %s %s %s" % (record["name"],record["price"], record["rating"], record["website"]))
-
-    result = session.run("""match(a:product_type{type:$name})<-[:of_type]-(b:product)-[r:sold_by]
-                         -> (c:website) where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
-                           return b.name as name,r.price as price,r.rating as rating,c.name as website""",
-                         name=prod, min_price=min_price, max_price=max_price, rating=rating)
-    for record in result:
-          print("%s %s %s %s" % (record["name"],record["price"], record["rating"], record["website"]))
-
+def show_all():
+    pass
 
 def addProduct():
     name = (NameEntry.get()).lower()
@@ -46,8 +20,10 @@ def addProduct():
     print (name,website,price,stock,rating,type1)
     session.run("""merge (site:website{name:$website}) merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site)
                 on create set r.price=$price ,r.stock=$stock,r.rating=$rating
-                on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating""",name=name,rating=rating,price = price,stock = stock,website=website)
-    session.run("match (x:product{name:$name}) merge(b:product_type{type:$type}) merge(x)-[:of_type]->(b)",name=name,type=type1)
+                on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating""",name=name,
+                rating=rating,price = price,stock = stock,website=website)
+    session.run("match (x:product{name:$name}) merge(b:product_type{type:$type}) merge(x)-[:of_type]->(b)",
+                name=name,type=type1)
 
 def deleteProduct():
     print(NameEntry2.get())
@@ -117,9 +93,6 @@ toEntry = Entry(searchFrame, width=7)
 toEntry.insert(0, 100000)
 toEntry.pack(side=LEFT)
 
-# Submit button for searching
-Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
-
 ################################################################################
 
 # Data will be shown in this frame
@@ -128,10 +101,130 @@ lineFrame.pack(fill=BOTH)
 
 ################################################################################
 
-# Data will be shown in this frame
-dataFrame = Frame(root, bg='red')
+global dataFrame
+dataFrame = Frame(root)
 dataFrame.pack(fill=BOTH,expand=True)
+# All the methods are here
+def go():
+    prod = searchBar.get().lower()
+    rating = ratingDropDownValue.get().lower()
+    rating = int(float(rating[-1]))
+    min_price = int(float(fromEntry.get()))
+    max_price = int(float(toEntry.get()))
+    result1 = session.run("""match (t:product_type)<-[:of_type]-(a:product)-[r:sold_by]->(b:website)
+                          where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
+                          return a.name as name,r.price as price,r.rating as rating,b.name as website,
+                          t.type as type""",
+                         name = prod,min_price=min_price,max_price=max_price,rating=rating)
+    count = 0
+    for record in result1:
+        if prod in record["name"]:
+            count += 1
+            print("%s %s %s %s %s" % (record["name"],record["price"], record["rating"], record["website"], record["type"]))
 
+    result2 = session.run("""match (a:product_type{type:$name})<-[:of_type]-(b:product)-[r:sold_by]
+                         -> (c:website) where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
+                           return b.name as name,r.price as price,r.rating as rating,c.name as website,
+                           a.type as type""",
+                         name=prod, min_price=min_price, max_price=max_price, rating=rating)
+    for record in result2:
+        count += 1
+        print("%s %s %s %s %s" % (record["name"],record["price"], record["rating"], record["website"], record["type"]))
+    global dataFrame
+    for widget in dataFrame.winfo_children():
+        widget.grid_forget()
+    if count > 0:
+        pad = 60
+        NameVar = StringVar()
+        NameLabel = Label(dataFrame, textvariable=NameVar, font='Helvetica 14 bold')
+        NameVar.set("Name")
+        NameLabel.grid(row=0, column=0, sticky=NSEW, padx=(pad, pad))
+        PriceVar = StringVar()
+        PriceLabel = Label(dataFrame, textvariable=PriceVar, font='Helvetica 14 bold')
+        PriceVar.set("Price")
+        PriceLabel.grid(row=0, column=1, sticky=NSEW, padx=(pad, pad))
+        RatingVar = StringVar()
+        RatingLabel = Label(dataFrame, textvariable=RatingVar, font='Helvetica 14 bold')
+        RatingVar.set("Rating")
+        RatingLabel.grid(row=0, column=2, sticky=NSEW, padx=(pad, pad))
+        WebsiteVar = StringVar()
+        WebsiteLabel = Label(dataFrame, textvariable=WebsiteVar, font='Helvetica 14 bold')
+        WebsiteVar.set("Website")
+        WebsiteLabel.grid(row=0, column=3, sticky=NSEW, padx=(pad, pad))
+        TypeVar = StringVar()
+        TypeLabel = Label(dataFrame, textvariable=TypeVar, font='Helvetica 14 bold')
+        TypeVar.set("Type")
+        TypeLabel.grid(row=0, column=4, sticky=NSEW, padx=(pad, pad))
+        result1 = session.run("""match (t:product_type)<-[:of_type]-(a:product)-[r:sold_by]->(b:website)
+                              where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
+                              return a.name as name,r.price as price,r.rating as rating,b.name as website,
+                              t.type as type""",
+                             name = prod,min_price=min_price,max_price=max_price,rating=rating)
+        result2 = session.run("""match (a:product_type{type:$name})<-[:of_type]-(b:product)-[r:sold_by]
+                          -> (c:website) where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
+                            return b.name as name,r.price as price,r.rating as rating,c.name as website,
+                            a.type as type""",
+                          name=prod, min_price=min_price, max_price=max_price, rating=rating)
+        i = 1
+        for record in result1:
+            if prod in record["name"]:
+                pad = 60
+                NameVar = StringVar()
+                NameLabel = Label(dataFrame, textvariable=NameVar)
+                NameVar.set(record["name"])
+                NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
+                PriceVar = StringVar()
+                PriceLabel = Label(dataFrame, textvariable=PriceVar)
+                PriceVar.set(record["price"])
+                PriceLabel.grid(row=i, column=1, sticky=NSEW, padx=(pad, pad))
+                RatingVar = StringVar()
+                RatingLabel = Label(dataFrame, textvariable=RatingVar)
+                RatingVar.set(record["rating"])
+                RatingLabel.grid(row=i, column=2, sticky=NSEW, padx=(pad, pad))
+                WebsiteVar = StringVar()
+                WebsiteLabel = Label(dataFrame, textvariable=WebsiteVar)
+                WebsiteVar.set(record["website"])
+                WebsiteLabel.grid(row=i, column=3, sticky=NSEW, padx=(pad, pad))
+                TypeVar = StringVar()
+                TypeLabel = Label(dataFrame, textvariable=TypeVar)
+                TypeVar.set(record["type"])
+                TypeLabel.grid(row=i, column=4, sticky=NSEW, padx=(pad, pad))
+                i += 1
+        for record in result2:
+            pad = 60
+            NameVar = StringVar()
+            NameLabel = Label(dataFrame, textvariable=NameVar)
+            NameVar.set(record["name"])
+            NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
+            PriceVar = StringVar()
+            PriceLabel = Label(dataFrame, textvariable=PriceVar)
+            PriceVar.set(record["price"])
+            PriceLabel.grid(row=i, column=1, sticky=NSEW, padx=(pad, pad))
+            RatingVar = StringVar()
+            RatingLabel = Label(dataFrame, textvariable=RatingVar)
+            RatingVar.set(record["rating"])
+            RatingLabel.grid(row=i, column=2, sticky=NSEW, padx=(pad, pad))
+            WebsiteVar = StringVar()
+            WebsiteLabel = Label(dataFrame, textvariable=WebsiteVar)
+            WebsiteVar.set(record["website"])
+            WebsiteLabel.grid(row=i, column=3, sticky=NSEW, padx=(pad, pad))
+            TypeVar = StringVar()
+            TypeLabel = Label(dataFrame, textvariable=TypeVar)
+            TypeVar.set(record["type"])
+            TypeLabel.grid(row=i, column=4, sticky=NSEW, padx=(pad, pad))
+            i += 1
+    else:
+        pad = 60
+        InfoVar = StringVar()
+        InfoLabel = Label(dataFrame, textvariable=InfoVar)
+        InfoVar.set("No results to show.")
+        InfoLabel.grid(row=0, column=0, padx=(pad, pad))
+
+# Submit button for searching
+Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
+
+# Show All button
+Button(searchFrame, text="Show All", command=show_all).pack(side=LEFT, padx=(10,0))
 ################################################################################
 
 # Data will be shown in this frame
