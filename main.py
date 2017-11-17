@@ -8,7 +8,9 @@ session = driver.session()
 ################################################################################
 
 def show_all():
-    pass
+    result = session.run("""match(a:product)-[:of_type]->(b:product_type) return distinct a.name as name,b.name as type""")
+    for record in result:
+        print(record["name"],record["type"])
 
 def addProduct():
     name = (NameEntry.get()).lower()
@@ -26,10 +28,20 @@ def addProduct():
                 name=name,type=type1)
 
 def deleteProduct():
-    print(NameEntry2.get())
-    print(websiteDropDownValue2.get())
-    print("Stock = " + StockEntry2.get())
-
+    name = (NameEntry2.get()).lower()
+    website =(websiteDropDownValue2.get()).lower()
+    stock =  int(float(StockEntry2.get().lower()))
+    print (name,website,stock)
+    result = session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) return r.stock as p
+                          ''',name=name,website=website)
+    for record in result:
+        result=record["p"]
+    print (result)
+    if (result>stock):
+        session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) set r.stock=r.stock-$stock''', name=name, website=website,stock=stock);
+    elif (result> 0):
+        session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) delete r''', name=name, website=website);
+    print(result)
 ################################################################################
 # Window is created here
 root = Tk()
