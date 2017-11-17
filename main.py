@@ -7,11 +7,13 @@ session = driver.session()
 
 ################################################################################
 
+
 def show_all():
     result = session.run("""match(a:product)-[r:of_type]->(b:product_type),(a)-[x:sold_by]->(site:website) return distinct a.name as name,b.type as type,
      x.price as price,x.rating as rating,site.name as website""")
     for record in result:
         print(record["name"],record["type"],record["rating"],record["website"],record["price"])
+
 
 def addProduct():
     name = (NameEntry.get()).lower()
@@ -27,6 +29,8 @@ def addProduct():
                 rating=rating,price = price,stock = stock,website=website)
     session.run("match (x:product{name:$name}) merge(b:product_type{type:$type}) merge(x)-[:of_type]->(b)",
                 name=name,type=type1)
+
+
 
 def deleteProduct():
     name = (NameEntry2.get()).lower()
@@ -45,6 +49,7 @@ def deleteProduct():
         session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) set r.stock=r.stock-$stock''', name=name, website=website,stock=stock);
     elif (result> 0):
         session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) delete r''', name=name, website=website);
+
 ################################################################################
 # Window is created here
 root = Tk()
@@ -53,6 +58,7 @@ root.title("Product-Comparison-System-Using-Neo4j")
 padding = 20
 searchFrame = Frame(root, height=100)
 searchFrame.pack(pady=(padding,padding), padx=(padding, padding))
+
 
 # Search bar
 # Use this as a flag to indicate if the box was clicked.
@@ -66,6 +72,8 @@ def callback(event):
         searchBar.delete(0, END)
         searchBar.config(fg = "black")   # Change the colour of the text here.
         clicked = True
+
+
 searchBar = Entry(searchFrame, fg = "gray")
 searchBar.bind("<Button-1>", callback)   # Bind a mouse-click to the callback function.
 searchBar.insert(0, 'Search for a product...')
