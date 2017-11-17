@@ -8,9 +8,10 @@ session = driver.session()
 ################################################################################
 
 def show_all():
-    result = session.run("""match(a:product)-[:of_type]->(b:product_type) return distinct a.name as name,b.type as type""")
+    result = session.run("""match(a:product)-[r:of_type]->(b:product_type),(a)-[x:sold_by]->(site:website) return distinct a.name as name,b.type as type,
+     x.price as price,x.rating as rating,site.name as website""")
     for record in result:
-        print(record["name"],record["type"])
+        print(record["name"],record["type"],record["rating"],record["website"],record["price"])
 
 def addProduct():
     name = (NameEntry.get()).lower()
