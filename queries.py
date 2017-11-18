@@ -1,9 +1,20 @@
 from neo4j.v1 import GraphDatabase, basic_auth
+from check_error import *
 
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "ayush@12"))
 session = driver.session()
 
 def add_queries(name, website, price, stock, rating, type1):
+    if int_check(stock) == False:
+        error_msg()
+        return False
+    else:
+        stock = int(stock)
+    if float_check(price):
+        price = float(price)
+    else:
+        error_msg()
+        return False
     session.run("""merge (site:website{name:$website}) merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site)
                 on create set r.price=$price ,r.stock=$stock,r.rating=$rating
                 on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating""",name=name,
@@ -12,13 +23,18 @@ def add_queries(name, website, price, stock, rating, type1):
                 name=name,type=type1)
 
 def show_all_queries():
-    result = session.run("""match(a:product)-[r:of_type]->(b:product_type),(a)-[x:sold_by]->(site:website) return distinct a.name as name,b.type as type,
-    x.price as price,x.rating as rating,site.name as website""")
+    result = session.run("""match(a:product)-[r:of_type]->(b:product_type),(a)-[x:sold_by]->(site:website)
+                            return distinct a.name as name,b.type as type
+                            order by b.type""")
     return result
 
 def delete_queries(name, website, stock):
-    result = session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) return r.stock as p
-                          ''',name=name,website=website)
+    if int_check(stock) == False:
+        error_msg()
+        return False
+    else:
+        stock = int(stock)
+    result = session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) return r.stock as p''',name=name,website=website)
     cnt = 0
     for record in result:
         result = record["p"]
@@ -31,6 +47,12 @@ def delete_queries(name, website, stock):
         session.run('''match(a:product{name:$name})-[r:sold_by]->(b:website{name:$website}) delete r''', name=name, website=website)
 
 def go_queries(prod, min_price, max_price, rating):
+    if float_check(min_price) and float_check(max_price):
+        min_price = float(min_price)
+        max_price = float(max_price)
+    else:
+        error_msg()
+        return False, False
     result1 = session.run("""match (t:product_type)<-[:of_type]-(a:product)-[r:sold_by]->(b:website)
                           where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
                            return a.name as name,r.price as price,r.rating as rating,b.name as website,

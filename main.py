@@ -1,25 +1,17 @@
 from tkinter import *
 from tkinter import ttk
-from check_error import *
 from queries import *
 
 ################################################################################
 def addProduct():
     name = (NameEntry.get()).lower()
     website = (websiteDropDownValue.get()).lower()
-    price = int(float(PriceEntry.get()))
-    stock = int(float(StockEntry.get()))
-    rating = float(RatingEntry.get())
-    type1 = (TypeEntry.get()).lower()
-    # print (name,website,price,stock,rating,type1)
-    add_queries(name, website, price, stock, rating, type1)
+    add_queries(name, website, PriceEntry.get(), StockEntry.get(), float(RatingEntry.get()), (TypeEntry.get()).lower())
 
 def deleteProduct():
     name = (NameEntry2.get()).lower()
     website =(websiteDropDownValue2.get()).lower()
-    stock =  int(float(StockEntry2.get().lower()))
-    # print (name,website,stock)
-    delete_queries(name, website, stock)
+    delete_queries(name, website, StockEntry2.get())
 
 ################################################################################
 # Window is created here
@@ -107,59 +99,43 @@ def show_all():
     NameLabel = Label(dataFrame, textvariable=NameVar, font='Helvetica 14 bold')
     NameVar.set("Name")
     NameLabel.grid(row=0, column=0, sticky=NSEW, padx=(pad, pad))
-    PriceVar = StringVar()
-    PriceLabel = Label(dataFrame, textvariable=PriceVar, font='Helvetica 14 bold')
-    PriceVar.set("Price")
-    PriceLabel.grid(row=0, column=1, sticky=NSEW, padx=(pad, pad))
-    RatingVar = StringVar()
-    RatingLabel = Label(dataFrame, textvariable=RatingVar, font='Helvetica 14 bold')
-    RatingVar.set("Rating")
-    RatingLabel.grid(row=0, column=2, sticky=NSEW, padx=(pad, pad))
-    WebsiteVar = StringVar()
-    WebsiteLabel = Label(dataFrame, textvariable=WebsiteVar, font='Helvetica 14 bold')
-    WebsiteVar.set("Website")
-    WebsiteLabel.grid(row=0, column=3, sticky=NSEW, padx=(pad, pad))
     TypeVar = StringVar()
     TypeLabel = Label(dataFrame, textvariable=TypeVar, font='Helvetica 14 bold')
     TypeVar.set("Type")
-    TypeLabel.grid(row=0, column=4, sticky=NSEW, padx=(pad, pad))
+    TypeLabel.grid(row=0, column=1, sticky=NSEW, padx=(pad, pad))
     result1 = show_all_queries()
     i = 1
+    col = 0
     for record in result1:
         pad = 60
         NameVar = StringVar()
         NameLabel = Label(dataFrame, textvariable=NameVar)
         NameVar.set(record["name"])
-        NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
-        PriceVar = StringVar()
-        PriceLabel = Label(dataFrame, textvariable=PriceVar)
-        PriceVar.set(record["price"])
-        PriceLabel.grid(row=i, column=1, sticky=NSEW, padx=(pad, pad))
-        RatingVar = StringVar()
-        RatingLabel = Label(dataFrame, textvariable=RatingVar)
-        RatingVar.set(record["rating"])
-        RatingLabel.grid(row=i, column=2, sticky=NSEW, padx=(pad, pad))
-        WebsiteVar = StringVar()
-        WebsiteLabel = Label(dataFrame, textvariable=WebsiteVar)
-        WebsiteVar.set(record["website"])
-        WebsiteLabel.grid(row=i, column=3, sticky=NSEW, padx=(pad, pad))
+        NameLabel.grid(row=i, column=2*col, sticky=NSEW, padx=(pad, pad))
         TypeVar = StringVar()
         TypeLabel = Label(dataFrame, textvariable=TypeVar)
         TypeVar.set(record["type"])
-        TypeLabel.grid(row=i, column=4, sticky=NSEW, padx=(pad, pad))
+        TypeLabel.grid(row=i, column=2*col+1, sticky=NSEW, padx=(pad, pad))
         i += 1
+        if(i >= 15):
+            col += 1
+            i = 1
+            NameVar = StringVar()
+            NameLabel = Label(dataFrame, textvariable=NameVar, font='Helvetica 14 bold')
+            NameVar.set("Name")
+            NameLabel.grid(row=0, column=2*col, sticky=NSEW, padx=(pad, pad))
+            TypeVar = StringVar()
+            TypeLabel = Label(dataFrame, textvariable=TypeVar, font='Helvetica 14 bold')
+            TypeVar.set("Type")
+            TypeLabel.grid(row=0, column=2*col+1, sticky=NSEW, padx=(pad, pad))
 
 def go():
     prod = searchBar.get().lower()
     rating = ratingDropDownValue.get().lower()
     rating = int(rating[-1])
-    if float_check(fromEntry.get()) and float_check(toEntry.get()):
-        min_price = float(fromEntry.get())
-        max_price = float(toEntry.get())
-    else:
-        error_msg()
+    result1, result2 = go_queries(prod, fromEntry.get(), toEntry.get(), rating)
+    if result1 == False and result2 == False:
         return False
-    result1, result2 = go_queries(prod, min_price, max_price, rating)
     count = 0
     for record in result1:
         if prod in record["name"]:
@@ -193,7 +169,7 @@ def go():
         TypeLabel = Label(dataFrame, textvariable=TypeVar, font='Helvetica 14 bold')
         TypeVar.set("Type")
         TypeLabel.grid(row=0, column=4, sticky=NSEW, padx=(pad, pad))
-        result1, result2 = go_queries(prod, min_price, max_price, rating)
+        result1, result2 = go_queries(prod, fromEntry.get(), toEntry.get(), rating)
         i = 1
         for record in result1:
             if prod in record["name"]:
