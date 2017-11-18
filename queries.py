@@ -33,12 +33,13 @@ def delete_queries(name, website, stock):
 def go_queries(prod, min_price, max_price, rating):
     result1 = session.run("""match (t:product_type)<-[:of_type]-(a:product)-[r:sold_by]->(b:website)
                           where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
-                          return a.name as name,r.price as price,r.rating as rating,b.name as website,
-                          t.type as type""",
+                           return a.name as name,r.price as price,r.rating as rating,b.name as website,
+                          t.type as type order by r.rating desc""",
                          name = prod,min_price=min_price,max_price=max_price,rating=rating)
+    
     result2 = session.run("""match (a:product_type{type:$name})<-[:of_type]-(b:product)-[r:sold_by]
                       -> (c:website) where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
                         return b.name as name,r.price as price,r.rating as rating,c.name as website,
-                        a.type as type""",
+                        a.type as type order by r.rating desc""",
                       name=prod, min_price=min_price, max_price=max_price, rating=rating)
     return result1, result2
