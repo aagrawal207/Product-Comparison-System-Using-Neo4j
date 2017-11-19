@@ -336,4 +336,14 @@ Button(deleteFrame, text="Delete Product", command=deleteProduct).grid(row=row_n
 
 show_all()
 
+import tkinter
+import tkinter.messagebox
+
+def on_closing():
+    if tkinter.messagebox.askokcancel("Quit", "Do you want to quit?"):
+        import antigravity
+        root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
+
 root.mainloop()

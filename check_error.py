@@ -7,7 +7,6 @@ def error_msg():
 def int_check(s):
     if s.isnumeric():
         return True
-
     return False
 
 def float_check(s):
