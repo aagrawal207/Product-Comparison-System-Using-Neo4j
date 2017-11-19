@@ -1,17 +1,95 @@
 from tkinter import *
 from tkinter import ttk
 from queries import *
+import re
 
-################################################################################
-def addProduct():
-    name = (NameEntry.get()).lower()
-    website = (websiteDropDownValue.get()).lower()
-    add_queries(name, website, PriceEntry.get(), StockEntry.get(), float(RatingEntry.get()), (TypeEntry.get()).lower())
+lista = []
+# Search bar
+# Use this as a flag to indicate if the box was clicked.
+global clicked
+clicked = False
 
-def deleteProduct():
-    name = (NameEntry2.get()).lower()
-    website =(websiteDropDownValue2.get()).lower()
-    delete_queries(name, website, StockEntry2.get())
+class AutocompleteEntry(Entry):
+
+    def changed(self, name, index, mode):
+
+        if self.var.get() == '':
+            self.lb_up = False
+            try:
+                self.lb.destroy()
+            except:
+                pass
+        else:
+            words = self.comparison()
+            if words:
+                if not self.lb_up:
+                    self.lb = Listbox()
+                    self.lb.bind("<Double-Button-1>", self.selection)
+                    self.lb.bind("<Right>", self.selection)
+                    self.lb.place(x=self.winfo_x()+self.winfo_width() + 115, y=self.winfo_y()+self.winfo_height() + 17)
+                    self.lb_up = True
+
+                self.lb.delete(0, END)
+                for w in words:
+                    self.lb.insert(END,w)
+            else:
+                if self.lb_up:
+                    try:
+                        self.lb.destroy()
+                    except:
+                        pass
+                    self.lb_up = False
+
+    def selection(self, event):
+        if self.lb_up:
+            self.var.set(self.lb.get(ACTIVE))
+            try:
+                self.lb.destroy()
+            except:
+                pass
+            self.lb_up = False
+            self.icursor(END)
+
+    def up(self, event):
+        if self.lb_up:
+            if self.lb.curselection() == ():
+                index = '0'
+            else:
+                index = self.lb.curselection()[0]
+            if index != '0':
+                self.lb.selection_clear(first=index)
+                index = str(int(index)-1)
+                self.lb.selection_set(first=index)
+                self.lb.activate(index)
+
+    def down(self, event):
+
+        if self.lb_up:
+            if self.lb.curselection() == ():
+                index = '0'
+            else:
+                index = self.lb.curselection()[0]
+            if index != END:
+                self.lb.selection_clear(first=index)
+                index = str(int(index)+1)
+                self.lb.selection_set(first=index)
+                self.lb.activate(index)
+
+    def comparison(self):
+        pattern = re.compile('.*' + self.var.get() + '.*')
+        return [w for w in self.lista if re.match(pattern, w)]
+
+    def __init__(self, lista, *args, **kwargs):
+        Entry.__init__(self, *args, **kwargs)
+        self.lista = lista
+        self.var = self["textvariable"]
+        if self.var == '':
+            self.var = self["textvariable"] = StringVar()
+        self.var.trace('w', self.changed)
+        self.bind("<Right>", self.selection)
+        self.bind("<Up>", self.up)
+        self.bind("<Down>", self.down)
+        self.lb_up = False
 
 ################################################################################
 # Window is created here
@@ -22,10 +100,6 @@ padding = 20
 searchFrame = Frame(root, height=100)
 searchFrame.pack(pady=(padding,padding), padx=(padding, padding))
 
-# Search bar
-# Use this as a flag to indicate if the box was clicked.
-global clicked
-clicked = False
 # Delete the contents of the Entry widget. Use the flag
 # so that this only happens the first time.
 def callback(event):
@@ -35,7 +109,16 @@ def callback(event):
         searchBar.config(fg = "black")   # Change the colour of the text here.
         clicked = True
 
-searchBar = Entry(searchFrame, fg = "gray")
+result = show_all_queries()
+
+for record in result:
+    lista.append(record["type"])
+    lista.append(record["name"])
+
+myset = set(lista)
+lista = list(myset)
+
+searchBar = AutocompleteEntry(lista, searchFrame, fg = "gray")
 searchBar.bind("<Button-1>", callback)   # Bind a mouse-click to the callback function.
 searchBar.insert(0, 'Search for a product...')
 searchBar.pack(side=LEFT, fill=X)
@@ -76,6 +159,25 @@ PriceRangeLabelTo.pack(side=LEFT)
 toEntry = Entry(searchFrame, width=7)
 toEntry.insert(0, 100000)
 toEntry.pack(side=LEFT)
+
+################################################################################
+def addProduct():
+    name = (NameEntry.get()).lower()
+    website = (websiteDropDownValue.get()).lower()
+    add_queries(name, website, PriceEntry.get(), StockEntry.get(), float(RatingEntry.get()), (TypeEntry.get()).lower())
+    result = show_all_queries()
+    global lista
+    for record in result:
+        lista.append(record["type"])
+        lista.append(record["name"])
+
+    myset = set(lista)
+    lista = list(myset)
+
+def deleteProduct():
+    name = (NameEntry2.get()).lower()
+    website =(websiteDropDownValue2.get()).lower()
+    delete_queries(name, website, StockEntry2.get())
 
 ################################################################################
 # Data will be shown in this frame
@@ -225,6 +327,7 @@ def go():
         InfoVar.set("No results to show.")
         InfoLabel.grid(row=0, column=0, padx=(pad, pad))
 
+
 # Submit button for searching
 Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
 # Show All button
@@ -336,14 +439,13 @@ Button(deleteFrame, text="Delete Product", command=deleteProduct).grid(row=row_n
 
 show_all()
 
-import tkinter
-import tkinter.messagebox
-
-def on_closing():
-    if tkinter.messagebox.askokcancel("Quit", "Do you want to quit?"):
-        import antigravity
-        root.destroy()
-
-root.protocol("WM_DELETE_WINDOW", on_closing)
+# import tkinter.messagebox
+#
+# def on_closing():
+#     if tkinter.messagebox.askokcancel("Quit", "Do you want to quit?"):
+#         import antigravity
+#         root.destroy()
+#
+# root.protocol("WM_DELETE_WINDOW", on_closing)
 
 root.mainloop()
