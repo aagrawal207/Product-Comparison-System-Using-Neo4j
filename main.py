@@ -121,13 +121,13 @@ lista = list(myset)
 searchBar = AutocompleteEntry(lista, searchFrame, fg = "gray")
 searchBar.bind("<Button-1>", callback)   # Bind a mouse-click to the callback function.
 searchBar.insert(0, 'Search for a product...')
-searchBar.pack(side=LEFT, fill=X)
+searchBar.grid(row=0, column=0)
 
 # Label for "Price range from: "
 RatingVar = StringVar()
 RatingLabel = Label(searchFrame, textvariable=RatingVar)
 RatingVar.set("  Rating: ")
-RatingLabel.pack(side=LEFT)
+RatingLabel.grid(row=0, column=1)
 
 # Rating dropdown
 DropDownDict = {"Above 1" : 1, "Above 2" : 2, "Above 3" : 3, "Above 4" : 4}
@@ -136,29 +136,29 @@ ratingDropDownValue.set("Above 1") # default value
 ratingDropDown = OptionMenu(searchFrame,
                     ratingDropDownValue,
                     *DropDownDict.keys())
-ratingDropDown.pack(side=LEFT)
+ratingDropDown.grid(row=0, column=2)
 
 # Label for "Price range from: "
 PriceRangeVariableFrom = StringVar()
 PriceRangeLabelFrom = Label(searchFrame, textvariable=PriceRangeVariableFrom)
 PriceRangeVariableFrom.set("  Price range from: ")
-PriceRangeLabelFrom.pack(side=LEFT)
+PriceRangeLabelFrom.grid(row=0, column=3)
 
 # From entry
 fromEntry = Entry(searchFrame, width=7)
 fromEntry.insert(0, '0')
-fromEntry.pack(side=LEFT)
+fromEntry.grid(row=0, column=4)
 
 # Label for "to: "
 PriceRangeVariableTo = StringVar()
 PriceRangeLabelTo = Label(searchFrame, textvariable=PriceRangeVariableTo)
 PriceRangeVariableTo.set(" to: ")
-PriceRangeLabelTo.pack(side=LEFT)
+PriceRangeLabelTo.grid(row=0, column=5)
 
 # To entry
 toEntry = Entry(searchFrame, width=7)
 toEntry.insert(0, 100000)
-toEntry.pack(side=LEFT)
+toEntry.grid(row=0, column=6)
 
 ################################################################################
 def addProduct():
@@ -173,6 +173,8 @@ def addProduct():
 
     myset = set(lista)
     lista = list(myset)
+    searchBar = AutocompleteEntry(lista, searchFrame)
+    searchBar.grid(row=0, column=0)
 
 def deleteProduct():
     name = (NameEntry2.get()).lower()
@@ -329,9 +331,9 @@ def go():
 
 
 # Submit button for searching
-Button(searchFrame, text="Go!", command=go).pack(side=LEFT, padx=(10,0))
+Button(searchFrame, text="Go!", command=go).grid(row=0, column=7, padx=(10,0))
 # Show All button
-Button(searchFrame, text="Show All", command=show_all).pack(side=LEFT, padx=(10,0))
+Button(searchFrame, text="Show All", command=show_all).grid(row=0, column=8, padx=(10,0))
 ################################################################################
 # Data will be shown in this frame
 lineFrame = Frame(root, bg='black')
