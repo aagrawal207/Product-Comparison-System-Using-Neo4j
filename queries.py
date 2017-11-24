@@ -16,10 +16,10 @@ def add_queries(name, website, price, stock, rating, type1):
     else:
         error_msg()
         return False
-    
+
     ctime = time.time()
     ctime = int(ctime)
-    
+
     session.run("""merge (site:website{name:$website}) merge(a:product{name:$name}) merge(a)-[r:sold_by]->(site)
                 on create set r.price=$price ,r.stock=$stock,r.rating=$rating,r.arr_time=$ctime
                 on match set r.price =$price,r.stock = r.stock +$stock,r.rating=$rating""",name=name,
@@ -59,15 +59,16 @@ def go_queries(prod, min_price, max_price, rating):
     else:
         error_msg()
         return False, False
-    
+
     result1 = session.run("""match (t:product_type)<-[:of_type]-(a:product{name:$name})-[r:sold_by]->(b:website)
                           where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
                            return a.name as name,r.price as price,r.rating as rating,b.name as
-                                           website,r.arr_time as arrival,r.stock as stock,t.type as type order by r.rating desc""",
+                        website,r.arr_time as arrival,r.stock as stock,t.type as type order by r.rating desc""",
                          name = prod,min_price=min_price,max_price=max_price,rating=rating)
 
     result2 = session.run("""match (a:product_type{type:$name})<-[:of_type]-(b:product)-[r:sold_by]
                       -> (c:website) where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
-                        return b.name as name,r.price as price,r.rating as rating,c.name as website,r.stock as stock,r.arr_time as arrival,a.type as type order by r.rating desc""",
+                        return b.name as name,r.price as price,r.rating as rating,c.name as website,
+                    r.stock as stock,r.arr_time as arrival,a.type as type order by r.rating desc""",
                       name=prod, min_price=min_price, max_price=max_price, rating=rating)
     return result1, result2

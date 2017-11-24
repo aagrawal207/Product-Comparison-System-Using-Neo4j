@@ -278,10 +278,17 @@ def go():
         for record in result1:
             if prod in record["name"]:
                 pad = 60
+                s = record["name"]
                 NameVar = StringVar()
                 NameLabel = Label(dataFrame, textvariable=NameVar)
-                NameVar.set(record["name"])
+                NameVar.set(s)
                 NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
+                if record["stock"] == 0:
+                    s = record["name"] + "(Out Of Stock)"
+                    NameVar = StringVar()
+                    NameLabel = Label(dataFrame, textvariable=NameVar, fg='red')
+                    NameVar.set(s)
+                    NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
                 PriceVar = StringVar()
                 PriceLabel = Label(dataFrame, textvariable=PriceVar)
                 PriceVar.set(record["price"])
@@ -301,10 +308,16 @@ def go():
                 i += 1
         for record in result2:
             pad = 60
+            s = record["name"]
+            if record["stock"] == 0:
+                s = record["name"] + "(Out Of Stock)"
             NameVar = StringVar()
             NameLabel = Label(dataFrame, textvariable=NameVar)
-            NameVar.set(record["name"])
-            NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
+            NameVar.set(s)
+            if record["stock"] == 0:
+                NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad), fg='red')
+            else:
+                NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
             PriceVar = StringVar()
             PriceLabel = Label(dataFrame, textvariable=PriceVar)
             PriceVar.set(record["price"])
