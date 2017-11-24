@@ -164,7 +164,7 @@ toEntry.grid(row=0, column=6)
 def addProduct():
     name = (NameEntry.get()).lower()
     website = (websiteDropDownValue.get()).lower()
-    add_queries(name, website, PriceEntry.get(), StockEntry.get(), float(RatingEntry.get()), (TypeEntry.get()).lower())
+    add_queries(name, website, PriceEntry.get(), StockEntry.get(), RatingEntry.get(), (TypeEntry.get()).lower())
     result = show_all_queries()
     global lista
     for record in result:

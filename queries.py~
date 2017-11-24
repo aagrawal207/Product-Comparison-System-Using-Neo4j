@@ -16,7 +16,11 @@ def add_queries(name, website, price, stock, rating, type1):
     else:
         error_msg()
         return False
-    
+    if rating_check(rating):
+        rat = float(rating)
+    else:
+        error_msg()
+        return False
     ctime = time.time()
     ctime = int(ctime)
     

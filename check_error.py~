@@ -28,7 +28,6 @@ def rating_check(s):
             b = float(s) 
             if b <= 5 and b>=0:
                 return True
-            
             return False
         except ValueError:
               return False       
