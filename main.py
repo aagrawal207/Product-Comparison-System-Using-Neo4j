@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from queries import *
 import re
+import time
 
 lista = []
 # Search bar
@@ -279,12 +280,17 @@ def go():
             if prod in record["name"]:
                 pad = 60
                 s = record["name"]
+                print(type(record["arrival"]))
+                # if time.time() - record["arrival"] <= 604800:
+                #     s = "*" + record["name"]
                 NameVar = StringVar()
                 NameLabel = Label(dataFrame, textvariable=NameVar)
                 NameVar.set(s)
                 NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
                 if record["stock"] == 0:
                     s = record["name"] + "(Out Of Stock)"
+                    # if time.time() - record["arrival"] <= 604800:
+                    #     s = "*" + record["name"] + "(Out Of Stock)"
                     NameVar = StringVar()
                     NameLabel = Label(dataFrame, textvariable=NameVar, fg='red')
                     NameVar.set(s)
@@ -309,14 +315,20 @@ def go():
         for record in result2:
             pad = 60
             s = record["name"]
-            if record["stock"] == 0:
-                s = record["name"] + "(Out Of Stock)"
+            # print(type(record["arrival"]))
+            # if time.time() - record["arrival"] <= 604800:
+            #     s = "*" + record["name"]
             NameVar = StringVar()
             NameLabel = Label(dataFrame, textvariable=NameVar)
             NameVar.set(s)
+            NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
             if record["stock"] == 0:
-                NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad), fg='red')
-            else:
+                s = record["name"] + "(Out Of Stock)"
+                # if time.time() - record["arrival"] <= 604800:
+                #     s = "*" + record["name"] + "(Out Of Stock)"
+                NameVar = StringVar()
+                NameLabel = Label(dataFrame, textvariable=NameVar, fg='red')
+                NameVar.set(s)
                 NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
             PriceVar = StringVar()
             PriceLabel = Label(dataFrame, textvariable=PriceVar)
