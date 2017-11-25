@@ -17,7 +17,7 @@ def add_queries(name, website, price, stock, rating, type1):
         error_msg()
         return False
     if rating_check(rating):
-        rat = float(rating)
+        rating = float(rating)
     else:
         rating_limit()
         return False
@@ -63,7 +63,7 @@ def go_queries(prod, min_price, max_price, rating):
     else:
         error_msg()
         return False, False
-
+    print(prod)
     result1 = session.run("""match (t:product_type)<-[:of_type]-(a:product{name:$name})-[r:sold_by]->(b:website)
                           where r.price <= $max_price and r.rating>=$rating and r.price >=$min_price
                            return a.name as name,r.price as price,r.rating as rating,b.name as

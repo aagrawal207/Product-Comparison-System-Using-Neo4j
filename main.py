@@ -174,8 +174,8 @@ def addProduct():
 
     myset = set(lista)
     lista = list(myset)
-    searchBar = AutocompleteEntry(lista, searchFrame)
-    searchBar.grid(row=0, column=0)
+    #searchBar = AutocompleteEntry(lista, searchFrame)
+    #searchBar.grid(row=0, column=0)
 
 def deleteProduct():
     name = (NameEntry2.get()).lower()
@@ -237,7 +237,8 @@ def show_all():
 def go():
     prod = searchBar.get().lower()
     rating = ratingDropDownValue.get().lower()
-    rating = int(rating[-1])
+    rating = float(rating[-1])
+    print (prod,"hi")
     result1, result2 = go_queries(prod, fromEntry.get(), toEntry.get(), rating)
     if result1 == False and result2 == False:
         return False
@@ -274,23 +275,24 @@ def go():
         TypeLabel = Label(dataFrame, textvariable=TypeVar, font='Helvetica 14 bold')
         TypeVar.set("Type")
         TypeLabel.grid(row=0, column=4, sticky=NSEW, padx=(pad, pad))
+        print (prod,"hi2")
         result1, result2 = go_queries(prod, fromEntry.get(), toEntry.get(), rating)
         i = 1
         for record in result1:
             if prod in record["name"]:
                 pad = 60
                 s = record["name"]
-                print(type(record["arrival"]))
-                # if time.time() - record["arrival"] <= 604800:
-                #     s = "*" + record["name"]
+                #print(type(record["arrival"]))
+                if time.time() - record["arrival"] <= 300:
+                    s = "*" + record["name"]
                 NameVar = StringVar()
                 NameLabel = Label(dataFrame, textvariable=NameVar)
                 NameVar.set(s)
                 NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
                 if record["stock"] == 0:
                     s = record["name"] + "(Out Of Stock)"
-                    # if time.time() - record["arrival"] <= 604800:
-                    #     s = "*" + record["name"] + "(Out Of Stock)"
+                    if time.time() - record["arrival"] <= 300:
+                        s = "*" + record["name"] + "(Out Of Stock)"
                     NameVar = StringVar()
                     NameLabel = Label(dataFrame, textvariable=NameVar, fg='red')
                     NameVar.set(s)
@@ -316,16 +318,16 @@ def go():
             pad = 60
             s = record["name"]
             # print(type(record["arrival"]))
-            # if time.time() - record["arrival"] <= 604800:
-            #     s = "*" + record["name"]
+            if time.time() - record["arrival"] <= 300:
+                s = "*" + record["name"]
             NameVar = StringVar()
             NameLabel = Label(dataFrame, textvariable=NameVar)
             NameVar.set(s)
             NameLabel.grid(row=i, column=0, sticky=NSEW, padx=(pad, pad))
             if record["stock"] == 0:
                 s = record["name"] + "(Out Of Stock)"
-                # if time.time() - record["arrival"] <= 604800:
-                #     s = "*" + record["name"] + "(Out Of Stock)"
+                if time.time() - record["arrival"] <= 300:
+                    s = "*" + record["name"] + "(Out Of Stock)"
                 NameVar = StringVar()
                 NameLabel = Label(dataFrame, textvariable=NameVar, fg='red')
                 NameVar.set(s)
