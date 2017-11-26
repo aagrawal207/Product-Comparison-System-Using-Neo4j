@@ -14,3 +14,5 @@ This is a course project for DBMS Lab.
 
 1. Start the database in neo4j Desktop App
 1. python3 main.py
+
+[PPT for the project](https://docs.google.com/presentation/d/1-4eeom9Rqlrx4tpjLM9Q13YTv3sJlT7DcrxNCbQ_G9k/edit?usp=sharing)
